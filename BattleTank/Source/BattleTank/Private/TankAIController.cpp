@@ -20,14 +20,10 @@ void ATankAIController::Tick(float DeltaTime)
 		// Fire if ready
 
 	}
-
-	
-
 }
 
 void ATankAIController::BeginPlay()
 {
-
 	Super::BeginPlay();
 
 	auto PlayerTank = GetPlayerTank();
