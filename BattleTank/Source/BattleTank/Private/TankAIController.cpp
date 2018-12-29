@@ -2,6 +2,7 @@
 
 #include "Public/TankAIController.h"
 #include "BattleTank.h"
+#include "Public/Tank.h"
 
 // Called every frame
 void ATankAIController::Tick(float DeltaTime)
