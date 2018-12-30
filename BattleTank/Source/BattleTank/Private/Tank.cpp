@@ -2,6 +2,7 @@
 
 #include "Public/Tank.h"
 #include "Public/TankAimingComponent.h"
+#include "Public/TankMovementComponent.h"
 #include "Public/TankBarrel.h"
 #include "Public/Projectile.h"
 
@@ -24,6 +25,7 @@ ATank::ATank()
 
 	// Pointers added at construction
 	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
+
 }
 
 // Called when the game starts or when spawned
@@ -49,7 +51,7 @@ void ATank::Fire()
 {
 	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds;
 
-	UE_LOG(LogTemp, Warning, TEXT("Firing!"));
+	// UE_LOG(LogTemp, Warning, TEXT("Firing!"));
 
 	if (Barrel && isReloaded)
 	{
