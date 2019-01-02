@@ -11,32 +11,24 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
+	bWantsBeginPlay = true;
 	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
+void UTankAimingComponent::Initialise(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet)
 {
-	if (!BarrelToSet) { return; }
 	Barrel = BarrelToSet;
-}
-
-void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet)
-{
-	if (!TurretToSet) { return; }
 	Turret = TurretToSet;
 }
 
-void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
+void UTankAimingComponent::AimAt(FVector HitLocation)
 {
-	if (!Barrel) { return; }
+	if (!ensure(Barrel)) { return; }
 
-	FVector OutLaunchVelocity(0);
+	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
-
-	// Calculate the OutLaunchVelocity
-
 	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity
 	(
 		this,
@@ -47,7 +39,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		false,
 		0,
 		0,
-		ESuggestProjVelocityTraceOption::DoNotTrace
+		ESuggestProjVelocityTraceOption::DoNotTrace // Parameter must be present to prevent bug
 	);
 
 	if (bHaveAimSolution)
@@ -55,17 +47,19 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		auto AimDirection = OutLaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
 	}
-	// No aiming solution found
+	// If no solution found do nothing
 }
 
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
-	// Work out the difference between the current barrel rotation, and AimDirection
-	auto BarrelRotation = Barrel->GetForwardVector().Rotation();
-	auto AimAsRotator = AimDirection.Rotation();
-	auto DeltaRotator = AimAsRotator - BarrelRotation;
+	if (!ensure(Barrel) || !ensure(Turret)) { return; }
 
-	Barrel->Elevate(DeltaRotator.Pitch); 
+	// Work-out difference between current barrel rotation, and AimDirection
+	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
+	auto AimAsRotator = AimDirection.Rotation();
+	auto DeltaRotator = AimAsRotator - BarrelRotator;
+
+	Barrel->Elevate(DeltaRotator.Pitch);
 	Turret->Rotate(DeltaRotator.Yaw);
 }
 
