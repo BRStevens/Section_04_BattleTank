@@ -78,3 +78,6 @@ DerivedDataCache/*
 
 # Content files for the editor to use
 Content/*
+
+*.png
+*.zip
