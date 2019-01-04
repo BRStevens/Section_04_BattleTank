@@ -19,8 +19,15 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 	if (CurrentHealth <= 0)
 	{
 		// dead tank
+		OnDeath.Broadcast();
 	}
 	return DamageToApply;
+}
+
+void ATank::BeginPlay()
+{
+	Super::BeginPlay();
+	CurrentHealth = StartingHealth;
 }
 
 float ATank::GetHealthPercent() const
